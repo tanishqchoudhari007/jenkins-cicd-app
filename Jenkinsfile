@@ -12,29 +12,27 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building application...'
-                sh 'javac src/Main.java'
+                bat 'javac src\\Main.java'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'java -cp src Main'
+                bat 'java -cp src Main'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t jenkins-cicd-app:${BUILD_NUMBER} .'
+                bat 'docker build -t jenkins-cicd-app:%BUILD_NUMBER% .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh '''
-                    docker rm -f jenkins-cicd-container || true
-                    docker run --name jenkins-cicd-container jenkins-cicd-app:${BUILD_NUMBER}
-                '''
+                bat 'docker rm -f jenkins-cicd-container 2>nul || exit /b 0'
+                bat 'docker run --name jenkins-cicd-container jenkins-cicd-app:%BUILD_NUMBER%'
             }
         }
     }
